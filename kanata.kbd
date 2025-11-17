@@ -20,15 +20,21 @@
   hold-time 180
   one-shot-time 750
 
+  ;; mouse speed
+  mouse-freq 8
+  mouse-accel-time 200
+  mouse-min-speed 3
+  mouse-max-speed 15
+
   ;; For home row mods
   left-hand-keys (
     q w e r t
-    a s d f g
+    a s g
     z x c v b
   )
   right-hand-keys (
     y u i o p
-    h j k l ;
+    h l ;
     n m , . /
   )
 )
@@ -48,9 +54,16 @@
   ext1 (layer-while-held extend1)
   lsymbol (layer-while-held leftsymbols)
   rsymbol (layer-while-held rightsymbols)
-  gmng (layer-switch nomods)
+  nmod (layer-switch nomods)
   tbse (layer-switch base)
   npad (layer-switch numpad)
+  mse (layer-while-held mouse)
+
+  ;; home row mods
+  d (tap-hold-release-keys $tap-time $hold-time (multi d @tap) lsft $left-hand-keys)
+  f (tap-hold-release-keys $tap-time $hold-time (multi f @tap) lctl $left-hand-keys)
+  j (tap-hold-release-keys $tap-time $hold-time (multi j @tap) rctl $right-hand-keys)
+  k (tap-hold-release-keys $tap-time $hold-time (multi k @tap) rsft $right-hand-keys)
 
   ;; layer tap-hold
   spext (tap-hold 150 150 spc @ext1)
@@ -68,26 +81,33 @@
     (lsft)
   )
 
-  ;; Mouse Wheel
+  ;; mouse Wheel
   wup (mwheel-up 10 30)
   wdn (mwheel-down 10 30)
 
-  ;; Double symbols
-  sqbr (macro [ 1 ] 1 left)
-  crbr (macro S-[ 1 S-] 1 left)
-  prts (macro S-9 1 S-0 1 left)
-  dlr (macro S-4 1 S-4 1 left)
-  vert (macro S-\ 1 S-\ 1 left)
+  ;; mouse movements
+  mup (movemouse-accel-up $mouse-freq $mouse-accel-time $mouse-min-speed $mouse-max-speed)
+  mdn (movemouse-accel-down $mouse-freq $mouse-accel-time $mouse-min-speed $mouse-max-speed)
+  mlf (movemouse-accel-left $mouse-freq $mouse-accel-time $mouse-min-speed $mouse-max-speed)
+  mri (movemouse-accel-right $mouse-freq $mouse-accel-time $mouse-min-speed $mouse-max-speed)
+
+  ;; double symbols
+  sqbr (macro [ 1 ] 1 left) ;; square brackets []
+  crbr (macro S-[ 1 S-] 1 left) ;; curly braces {}
+  prts (macro S-9 1 S-0 1 left) ;; parenthesis {}
+  dlr (macro S-4 1 S-4 1 left) ;; dollar signs $$
+  vert (macro S-\ 1 S-\ 1 left) ;; vertical bars ||
 
   ;; macros
   atab (multi lalt tab)
+
 )
 
 (deflayer base
   esc
   grv    1      2      3      4      5      6      7      8      9      0      -      =      bspc
   tab    q      w      e      r      t      y      u      i      o      p      [      ]      \
-  @ext1  a      @rsym  d      f      g      h      j      k      @lsym  ;      '      ret
+  @ext1  a      @rsym  @d     @f     g      h      @j     @k     @lsym  ;      '      ret
   lsft   z      x      c      v      b      n      m      ,      .      /      rsft
   lctl   lmet   lalt             @spext            ralt   rmet   rctl
 )
@@ -101,13 +121,22 @@
   lctl   lmet   lalt             spc               ralt   rmet   rctl
 )
 
+(deflayer mouse
+  esc
+  grv    1      2      3      4      5      6      7      8      9      0      -      =      bspc
+  tab    q      @wup   mmid   r      t      y      u      @mup   o      p      [      ]      \
+  @ext1  a      @wdn   mrgt   mlft   mlft   h      @mlf   @mdn   @mri   ;      '      ret
+  lsft   z      x      c      v      b      n      m      ,      .      /      rsft
+  lctl   lmet   lalt             spc               ralt   rmet   rctl
+)
+
 (deflayer extend1
   caps
-  grv    f1     f2     f3     f4     f5     f6     f7     f8     f9     f10    f11    f12    bspc
+  C-grv  f1     f2     f3     f4     f5     f6     f7     f8     f9     f10    f11    f12    bspc
   @atab  @cw    @wup   ret    r      t      pgup   home   up     end    del    [      ]      \
-  @ext1  lalt   @wdn   @osft  @octl  mlft   pgdn   left   down   right  bspc   esc    prtsc
-  lsft   C-b    C-z    C-x    C-v    mlft   @sqbr  @prts  @dlr   @vert  @crbr  rsft
-  lctl   @gmng  @tbse            ret               @npad  rmet   lrld
+  @ext1  lalt   @wdn   lsft   lctl   mlft   pgdn   left   down   right  bspc   esc    prtsc
+  lsft   C-b    C-z    C-x    C-v    b      esc    esc    @dlr   @vert  @crbr  rsft
+  lctl   @nmod  @tbse            spc               @npad  rmet   lrld
 )
 
 (deflayer numpad ;; Extend 2
@@ -115,17 +144,17 @@
   grv    1      2      3      4      5      6      7      8      9      S-8     -      =      bspc
   tab    home   up     end    r      t      pgup   4      5      6      S-=    S-9    S-0   \
   @ext1  left   down   right  bspc   mlft   pgdn   1      2      3      ret    '      ret
-  lsft   z      x      c      v      mlft   n      0      0      .      /      rsft
+  lsft   z      x      c      v      z      n      0      0      .      /      rsft
   lctl   lmet   lalt             @tbse             @tbse  rmet   rctl
 )
 
 (deflayer leftsymbols
   esc
-  grv    1      2      3      4      5      6      7      8      9      0      -      =      bspc
+  S-grv  1      2      3      4      5      6      7      8      9      0      -      =      bspc
   tab    S-6    S-,    S-.    S-5    t      y      u      i      o      p      [      ]      \
   @ext1  S-1    -      S-=    =      S-3    h      j      k      l      ;      '      ret
   lsft   /      S-8    \      S--    b      n      m      ,      .      /      rsft
-  lctl   @gmng  @tbse            ret               ralt   rmet   rctl
+  lctl   lmet   @tbse            @mse              ralt   rmet   rctl
 )
 
 (deflayer rightsymbols
@@ -134,6 +163,6 @@
   tab    q      w      e      r      t      y      S-4    S-[    S-]    p      [      ]      \
   @ext1  a      s      d      f      g      h      S-2    S-9    S-0    S-7    '      ret
   lsft   z      x      c      v      b      n      S-\    [      ]      /      rsft
-  lctl   @gmng  @tbse            esc               ralt   rmet   rctl
+  lctl   lmet   @tbse            spc               ralt   rmet   rctl
 )
 
